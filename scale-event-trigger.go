@@ -78,7 +78,6 @@ func main() {
 }
 
 func instanceCheck(ec2region *ec2.EC2) {
-	// interval should be from an argument
 	tick := time.Tick(time.Duration(*frequency) * time.Second)
 	for _ = range tick {
 		instances := getInstanceIDs(ec2region)
