@@ -5,7 +5,7 @@ Runs a command when EC2 instances that match the given tags change.
 
 Specify tags to limit instances that are checked, multiple tags can be used. You must specify at least one tag.
 
-`./scale-event-trigger Service:varnish Environment:live`
+`./scale-event-trigger Service:web Environment:live`
 
 Set the command to run with the --command flag:
 
