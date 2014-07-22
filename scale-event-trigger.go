@@ -96,7 +96,6 @@ func instanceCheck(ec2region *ec2.EC2) {
 			if err != nil {
 				log.Println(err)
 			} else {
-				fmt.Printf("%s", out)
 				TaggedInstances = instances
 			}
 		}
