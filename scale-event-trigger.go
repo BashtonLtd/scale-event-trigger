@@ -20,18 +20,20 @@ package main
  */
 import (
 	"fmt"
-	"github.com/crowdmob/goamz/aws"
-	"github.com/crowdmob/goamz/ec2"
-	"gopkg.in/alecthomas/kingpin.v1"
 	"log"
 	"log/syslog"
 	"os/exec"
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/crowdmob/goamz/aws"
+	"github.com/crowdmob/goamz/ec2"
+	kingpin "gopkg.in/alecthomas/kingpin.v1"
 )
 
 var (
+	debug     = kingpin.Flag("debug", "Enable extra logging.").Bool()
 	command   = kingpin.Flag("command", "Command to run when instances change.").Required().String()
 	frequency = kingpin.Flag("frequency", "Time in seconds to wait between checking EC2 instances.").Default("60").Int()
 	tags      = kingpin.Arg("tag", "Key:value pair of tags to match EC2 instances.").Strings()
@@ -46,7 +48,7 @@ func init() {
 }
 
 func main() {
-	kingpin.Version("1.0.0")
+	kingpin.Version("1.0.1")
 	kingpin.Parse()
 
 	sl, err := syslog.New(syslog.LOG_NOTICE|syslog.LOG_LOCAL0, "[scale-event-trigger]")
@@ -83,6 +85,11 @@ func instanceCheck(ec2region *ec2.EC2) {
 		instances := getInstanceIDs(ec2region)
 		sort.Strings(instances)
 
+		if *debug {
+			log.Println("Stored instance list: ", TaggedInstances)
+			log.Println("Fetched intsnce list: ", instances)
+		}
+
 		if !testEq(TaggedInstances, instances) {
 			// instances are different
 			log.Println("Instances changed running command")
@@ -91,7 +98,7 @@ func instanceCheck(ec2region *ec2.EC2) {
 			head := parts[0]
 			parts = parts[1:len(parts)]
 
-			out, err := exec.Command(head, parts...).Output()
+			_, err := exec.Command(head, parts...).Output()
 			if err != nil {
 				log.Println(err)
 			} else {
