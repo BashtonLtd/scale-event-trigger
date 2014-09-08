@@ -87,7 +87,7 @@ func instanceCheck(ec2region *ec2.EC2) {
 
 		if *debug {
 			log.Println("Stored instance list: ", TaggedInstances)
-			log.Println("Fetched intsnce list: ", instances)
+			log.Println("Fetched instance list: ", instances)
 		}
 
 		if !testEq(TaggedInstances, instances) {
